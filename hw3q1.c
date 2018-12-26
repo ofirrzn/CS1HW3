@@ -159,6 +159,14 @@ int ssnake_movement_direction();
 int psnake_movement_direction();
 //take in input direction and moves snake for %
 
+void move_d_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount);
+//changes location of snake in array when movement is down
+//array contains in order- row and column locations of individual bodyparts
+
+void move_l_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount);
+//changes location of snake in array when movement is down
 
 int  check_boardfull_yes_F();
 //ends game if board is full
@@ -166,6 +174,11 @@ int  check_boardfull_yes_F();
 
 int check_boardfull_no_F();
 //checks if board is full-doesnt regard F as empty space
+
+int food_found(int sleng_steps[S],char board[N][N],int shead[ROW][snakepos],
+               int rowh, int columnh, int turncount);
+//makes snake longer when snake head reaches F(food)
+//adds the location of new  body part in the corresponding snake array
 
 
 int main()
@@ -394,7 +407,6 @@ void snakes_initialize(char board[N][N], int size,int shead_s[ROW][snakepos], in
     }
     
 }
-
 bool movement_input_invalid(int direction){
     for(int i=1;i<=no_moves;i++){
         if(direction == input_movesnake*i){
@@ -403,7 +415,7 @@ bool movement_input_invalid(int direction){
     }
     return invalid_move;
 }
-
+//11 lines
 int snake_direction( int turncount){
     int direction=0;
     if(turncount%turn_c==PERCENT){
@@ -443,6 +455,7 @@ int move_down_p(int size, int sleng_steps[S],
                 if(snakeate==1){
                     board[shead_p[0][j]][shead_p[1][j]]=PERCENT_BODY;
                     sleng_steps[0]=sleng_steps[0]+1;
+                    sleng_steps[p_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -457,19 +470,8 @@ int move_down_p(int size, int sleng_steps[S],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_p[0][0]=rowh+1;
-                shead_p[1][0]=columnh;
-                break;
-            }
-            shead_p[0][L-1-j]=shead_p[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_p[1][L-1-j]=shead_p[1][L-2-j];
-            
-            
-        }
-        
+        move_d_changeindex( sleng_steps, shead_p,
+                            turncount);
         
         
     }
@@ -485,6 +487,123 @@ int move_down_p(int size, int sleng_steps[S],
     
     
 }
+
+//11 lines
+void move_d_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount){
+    int L=0,  rowh=shead[0][0], columnh=shead[1][0];
+    if(turncount%2==PERCENT){
+     L=sleng_steps[0] ;
+    }else{
+        L=sleng_steps[1];
+}
+    for(int j=0; j<L; j++){
+        if(L-1-j==0){
+            shead[0][0]=rowh+1;
+            shead[1][0]=columnh;
+            break;
+        }
+        shead[0][L-1-j]=shead[0][L-2-j];
+        shead[1][L-1-j]=shead[1][L-2-j];
+        
+        
+    }
+
+
+}
+//11 lines
+void move_u_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount){
+    int L=0,  rowh=shead[0][0], columnh=shead[1][0];
+    if(turncount%2==PERCENT){
+        L=sleng_steps[0] ;
+    }else{
+        L=sleng_steps[1];
+    }
+    for(int j=0; j<L; j++){
+        if(L-1-j==0){
+            shead[0][0]=rowh-1;
+            shead[1][0] = columnh;
+            break;
+        }
+        shead[0][L-1-j] = shead[0][L-2-j];
+        //assigns to each body part its new coordinates
+        shead[1][L-1-j] = shead[1][L-2-j];
+        
+    }
+
+    
+}
+//11 lines
+void move_r_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount){
+    int L=0,  rowh=shead[0][0], columnh=shead[1][0];
+    if(turncount%2==PERCENT){
+        L=sleng_steps[0] ;
+    }else{
+        L=sleng_steps[1];
+    }
+    for(int j=0; j<L; j++){
+        if(L-1-j==0){
+            shead[0][0]=rowh;
+            shead[1][0]=columnh+1;
+            break;
+        }
+        shead[0][L-1-j]=shead[0][L-2-j];
+        //assigns to each body part its new coordinates
+        shead[1][L-1-j]=shead[1][L-2-j];
+        
+    }
+    
+}
+//11 lines
+void move_l_changeindex(int sleng_steps[S],int shead[ROW][snakepos],
+                        int turncount){
+        int L=0,  rowh=shead[0][0], columnh=shead[1][0];
+    if(turncount%2==PERCENT){
+        L=sleng_steps[0] ;
+    }else{
+        L=sleng_steps[1];
+    }
+    for(int j=0; j<L; j++){
+        if(L-1-j==0){
+            shead[0][0]=rowh;
+            shead[1][0]=columnh-1;
+            break;
+        }
+        shead[0][L-1-j]=shead[0][L-2-j];
+        //assigns to each body part its new coordinates
+        shead[1][L-1-j]=shead[1][L-2-j];
+        
+        
+    }
+    
+}
+
+//9 lines
+int food_found(int sleng_steps[S],char board[N][N],int shead[ROW][snakepos],
+               int rowh, int columnh, int turncount){
+    int snakeate=0,L=0;
+    
+    if(turncount % 2==PERCENT){
+        L=sleng_steps[0] ;
+    }else{
+        L=sleng_steps[1];
+    }
+    
+    if(board[rowh][columnh]=='F'){
+        snakeate=1;
+        shead[0][L]=shead[0][L-1];
+        shead[1][L]=shead[1][L-1];
+    }
+    
+    
+    
+    return snakeate;
+}
+
+
+
 
 int move_left_p(int size, int sleng_steps[S],char board[N][N],
                 int shead_p[ROW][snakepos], int turncount){
@@ -505,6 +624,7 @@ int move_left_p(int size, int sleng_steps[S],char board[N][N],
                 if( snakeate==1){
                     board[shead_p[0][j]][shead_p[1][j]]=PERCENT_BODY;
                     sleng_steps[0]=sleng_steps[0]+1;
+                     sleng_steps[p_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -520,18 +640,8 @@ int move_left_p(int size, int sleng_steps[S],char board[N][N],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_p[0][0]=rowh;
-                shead_p[1][0]=columnh-1;
-                break;
-            }
-            shead_p[0][L-1-j]=shead_p[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_p[1][L-1-j]=shead_p[1][L-2-j];
-            
-            
-        }
+        move_l_changeindex( sleng_steps, shead_p,
+                            turncount);
         
         
         
@@ -572,6 +682,7 @@ int move_right_p(int size, int sleng_steps[S],char board[N][N],
                 if( snakeate==1){
                     board[shead_p[0][j]][shead_p[1][j]]=PERCENT_BODY;
                     sleng_steps[0]=sleng_steps[0]+1;
+                    sleng_steps[p_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -588,17 +699,9 @@ int move_right_p(int size, int sleng_steps[S],char board[N][N],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_p[0][0]=rowh;
-                shead_p[1][0]=columnh+1;
-                break;
-            }
-            shead_p[0][L-1-j]=shead_p[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_p[1][L-1-j]=shead_p[1][L-2-j];
-            
-        }
+        
+        move_r_changeindex( sleng_steps, shead_p,
+                           turncount);
     }
     else if (columnh+1>size) {
         endgame=game_over(turncount, ILLEGAL_MOVE);
@@ -634,6 +737,7 @@ int move_up_p(int size, int sleng_steps[S],char board[N][N],
                 if( snakeate==1){
                     board[shead_p[0][j]][shead_p[1][j]]=PERCENT_BODY;
                     sleng_steps[0]=sleng_steps[0]+1;
+                    sleng_steps[p_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -647,17 +751,8 @@ int move_up_p(int size, int sleng_steps[S],char board[N][N],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_p[0][0]=rowh-1;
-                shead_p[1][0] = columnh;
-                break;
-            }
-            shead_p[0][L-1-j] = shead_p[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_p[1][L-1-j] = shead_p[1][L-2-j];
-            
-        }
+        move_u_changeindex( sleng_steps, shead_p,
+                           turncount);
     }
     else if (rowh-1<0) {
         endgame=game_over(turncount, ILLEGAL_MOVE);
@@ -713,11 +808,8 @@ int move_down_s(int size, int sleng_steps[S],
     int endgame=not_yet, snakeate=not_yet;
     if(board[rowh+1][columnh]==' '|| board[rowh+1][columnh]=='F'){
         //ensures snake is allowed to move
-        if(board[rowh+1][columnh]=='F'){
-            snakeate=1;
-            shead_s[0][L]=shead_s[0][L-1];
-            shead_s[1][L]=shead_s[1][L-1];
-        }
+snakeate=food_found(sleng_steps,board,shead_s, rowh+1, columnh,
+                            turncount);
         board[rowh+1][columnh]=board[rowh][columnh];
         
         for(int j=0;j<L; j++){
@@ -725,6 +817,7 @@ int move_down_s(int size, int sleng_steps[S],
                 if(snakeate==1){
                     board[shead_s[0][j]][shead_s[1][j]]=SHTRODEL_BODY;
                     sleng_steps[1]=sleng_steps[1]+1;
+                    sleng_steps[s_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -740,20 +833,10 @@ int move_down_s(int size, int sleng_steps[S],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_s[0][0]=rowh+1;
-                shead_s[1][0]=columnh;
-                break;
-            }
-            shead_s[0][L-1-j]=shead_s[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_s[1][L-1-j]=shead_s[1][L-2-j];
-            
-            
-        }
+        move_d_changeindex( sleng_steps, shead_s,
+                           turncount);
         
-        
+
         
     }
     else if (rowh+1>size) {
@@ -776,11 +859,15 @@ int move_left_s(int size, int sleng_steps[S],
     int endgame=0, snakeate=0;
     if(board[rowh][columnh-1]==' '|| board[rowh][columnh-1]=='F'){
         //ensures snake is allowed to move
-        if(board[rowh][columnh-1]=='F'){
-            snakeate=1;
-            shead_s[0][L]=shead_s[0][L-1];
-            shead_s[1][L]=shead_s[1][L-1];
-        }
+        
+     //   if(board[rowh][columnh-1]=='F'){
+       //     snakeate=1;
+      //      shead_s[0][L]=shead_s[0][L-1];
+       //     shead_s[1][L]=shead_s[1][L-1];
+       // }
+ snakeate=food_found(sleng_steps,board,shead_s, rowh, columnh-1 ,
+                     turncount);
+        
         board[rowh][columnh-1]=board[rowh][columnh];
         
         for(int j=0;j<L; j++){
@@ -788,6 +875,7 @@ int move_left_s(int size, int sleng_steps[S],
                 if( snakeate==1){
                     board[shead_s[0][j]][shead_s[1][j]]=SHTRODEL_BODY;
                     sleng_steps[1]=sleng_steps[1]+1;
+                    sleng_steps[s_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -803,18 +891,9 @@ int move_left_s(int size, int sleng_steps[S],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_s[0][0]=rowh;
-                shead_s[1][0]=columnh-1;
-                break;
-            }
-            shead_s[0][L-1-j]=shead_s[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_s[1][L-1-j]=shead_s[1][L-2-j];
-            
-            
-        }
+      
+        move_l_changeindex( sleng_steps, shead_s,
+                           turncount);
         
         
         
@@ -843,11 +922,9 @@ int move_right_s(int size, int sleng_steps[S],
     if((board[rowh][columnh+1]==' ')|| (board[rowh][columnh+1]=='F')){
         //ensures snake is allowed to move
         //make sure that you create a special case for F
-        if(board[rowh][columnh+1]=='F'){
-            snakeate=1;
-            shead_s[0][L]=shead_s[0][L-1];
-            shead_s[1][L]=shead_s[1][L-1];
-        }
+        snakeate=food_found(sleng_steps,board,shead_s, rowh, columnh+1 ,
+                            turncount);
+        
         board[rowh][columnh+1]=board[rowh][columnh];
         
         for(int j=0;j<L; j++){
@@ -855,6 +932,7 @@ int move_right_s(int size, int sleng_steps[S],
                 if( snakeate==1){
                     board[shead_s[0][j]][shead_s[1][j]]=SHTRODEL_BODY;
                     sleng_steps[1]=sleng_steps[1]+1;
+                    sleng_steps[s_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -865,22 +943,12 @@ int move_right_s(int size, int sleng_steps[S],
                     break;
                 }
             }
-            board[ shead_s[0][j] ][ shead_s[1][j] ]=board[ shead_s[0][j+1] ][ shead_s[1][j+1] ];
+board[ shead_s[0][j] ][ shead_s[1][j] ]=board[ shead_s[0][j+1] ][ shead_s[1][j+1] ];
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_s[0][0]=rowh;
-                shead_s[1][0]=columnh+1;
-                break;
-            }
-            shead_s[0][L-1-j]=shead_s[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_s[1][L-1-j]=shead_s[1][L-2-j];
-            
-            
-        }
+        move_r_changeindex( sleng_steps, shead_s,
+                           turncount);
         
         
     }
@@ -906,11 +974,8 @@ int move_up_s(int size, int sleng_steps[S],
     if(board[rowh-1][columnh]==' '|| board[rowh-1][columnh]=='F'){
         //ensures snake is allowed to move
         //make sure that you create a special case for F
-        if(board[rowh-1][columnh]=='F'){
-            snakeate=1;
-            shead_s[0][L]=shead_s[0][L-1];
-            shead_s[1][L]=shead_s[1][L-1];
-        }
+snakeate=food_found(sleng_steps,board,shead_s, rowh-1, columnh,
+                            turncount);
         board[rowh-1][columnh]=board[rowh][columnh];
         
         for(int j=0;j<L; j++){
@@ -918,6 +983,7 @@ int move_up_s(int size, int sleng_steps[S],
                 if( snakeate==1){
                     board[shead_s[0][j]][shead_s[1][j]]=SHTRODEL_BODY;
                     sleng_steps[1]=sleng_steps[1]+1;
+                    sleng_steps[s_stepnoF_index]=0;
                     if(check_boardfull_no_F(size, board)==board_notf){
                         food_location(board, size);
                     }
@@ -931,19 +997,9 @@ int move_up_s(int size, int sleng_steps[S],
             // switches every body part with previous body part
             
         }
-        for(int j=0; j<L; j++){
-            if(L-1-j==0){
-                shead_s[0][0]=rowh-1;
-                shead_s[1][0]=columnh;
-                break;
-            }
-            shead_s[0][L-1-j]=shead_s[0][L-2-j];
-            //assigns to each body part its new coordinates
-            shead_s[1][L-1-j]=shead_s[1][L-2-j];
-            
-            
-        }
         
+        move_u_changeindex( sleng_steps, shead_s,
+                           turncount);
         
         
     }
