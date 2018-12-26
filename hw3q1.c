@@ -384,10 +384,6 @@ void snakes_initialize(char board[N][N], int size,int shead_s[ROW][snakepos], in
         
         
     }
-    
-    
-    
-    
     for(j=0;j<3;j++){
         shead_p[0][j]=0;
         shead_p[1][j]=j;
@@ -398,6 +394,7 @@ void snakes_initialize(char board[N][N], int size,int shead_s[ROW][snakepos], in
     }
     
 }
+
 bool movement_input_invalid(int direction){
     for(int i=1;i<=no_moves;i++){
         if(direction == input_movesnake*i){
@@ -601,11 +598,7 @@ int move_right_p(int size, int sleng_steps[S],char board[N][N],
             //assigns to each body part its new coordinates
             shead_p[1][L-1-j]=shead_p[1][L-2-j];
             
-            
         }
-        
-        
-        
     }
     else if (columnh+1>size) {
         endgame=game_over(turncount, ILLEGAL_MOVE);
@@ -657,18 +650,14 @@ int move_up_p(int size, int sleng_steps[S],char board[N][N],
         for(int j=0; j<L; j++){
             if(L-1-j==0){
                 shead_p[0][0]=rowh-1;
-                shead_p[1][0]=columnh;
+                shead_p[1][0] = columnh;
                 break;
             }
-            shead_p[0][L-1-j]=shead_p[0][L-2-j];
+            shead_p[0][L-1-j] = shead_p[0][L-2-j];
             //assigns to each body part its new coordinates
-            shead_p[1][L-1-j]=shead_p[1][L-2-j];
-            
+            shead_p[1][L-1-j] = shead_p[1][L-2-j];
             
         }
-        
-        
-        
     }
     else if (rowh-1<0) {
         endgame=game_over(turncount, ILLEGAL_MOVE);
@@ -679,8 +668,6 @@ int move_up_p(int size, int sleng_steps[S],char board[N][N],
     }
     
     return endgame;
-    
-    
     
     
 }
@@ -694,22 +681,9 @@ int move_snake_p(int size, int direction,int sleng_steps[S],char board[N][N],
         endgame=game_over(turncount, SNAKE_DIE);
         return endgame;
     }
-   
-    if(direction==down){
-        endgame= move_down_p(size, sleng_steps, board, shead_p, turncount);
-    }
     
-    if(direction==left){
-        endgame= move_left_p(size, sleng_steps, board, shead_p, turncount);
-    }
-    if(direction==right){
-        endgame=move_right_p(size, sleng_steps, board, shead_p, turncount);
-    }
-    
-    if(direction==up){
-        endgame= move_up_p(size, sleng_steps, board, shead_p, turncount);
-    }
-    
+    endgame = psnake_movement_direction(size, direction, sleng_steps, board,
+                                         shead_p, turncount);
     
     if(check_boardfull_yes_F(size, board)==board_full){
         
@@ -909,7 +883,6 @@ int move_right_s(int size, int sleng_steps[S],
         }
         
         
-        
     }
     else if (columnh+1>size) {
         endgame=game_over(turncount, ILLEGAL_MOVE);
@@ -988,7 +961,7 @@ int move_up_s(int size, int sleng_steps[S],
     
 }
 
-
+//13 lines
 int move_snake_s(int size, int direction,int sleng_steps[S],char board[N][N],
                  int shead_s[ROW][snakepos], int turncount, int max_steps){
     int endgame=not_yet;
@@ -997,22 +970,9 @@ int move_snake_s(int size, int direction,int sleng_steps[S],char board[N][N],
         endgame=game_over(turncount, SNAKE_DIE);
         return endgame;
     }
-    
-    if(direction==down){
-        endgame= move_down_s(size, sleng_steps, board, shead_s, turncount);
-    }
-    
-    if(direction==left){
-        endgame=move_left_s(size, sleng_steps, board, shead_s, turncount);
-    }
-    if(direction==right){
-        endgame=move_right_s(size, sleng_steps, board, shead_s, turncount);
-    }
-    
-    if(direction==up){
-        endgame= move_up_s(size, sleng_steps, board, shead_s, turncount);
-    }
-    
+
+    endgame = ssnake_movement_direction(size, direction, sleng_steps, board,
+                                        shead_s, turncount);
     
     if(check_boardfull_yes_F(size, board)==board_full){
         
@@ -1032,9 +992,9 @@ int move_snake_s(int size, int direction,int sleng_steps[S],char board[N][N],
 
 
 // 10 lines
-int ssnake_movement_direction(int direction, int size,int sleng_steps[S],
-                              char board[N][N],int shead_s[ROW][snakepos],
-                              int turncount){
+int ssnake_movement_direction(int size, int direction,
+                              int sleng_steps[S],char board[N][N],
+                              int shead_s[ROW][snakepos], int turncount){
     int endgame=not_yet;
     if(direction==down){
         endgame= move_down_s(size, sleng_steps, board, shead_s, turncount);
@@ -1057,9 +1017,9 @@ int ssnake_movement_direction(int direction, int size,int sleng_steps[S],
 }
 
 // 10 lines
-int psnake_movement_direction(int direction, int size, int sleng_steps[S],
-                              char board[N][N],int shead_p[ROW][snakepos],
-                              int turncount){
+int psnake_movement_direction(int size, int direction,
+                              int sleng_steps[S],char board[N][N],
+                              int shead_p[ROW][snakepos], int turncount){
     int endgame=not_yet;
     if(direction==down){
         endgame= move_down_p(size, sleng_steps, board, shead_p, turncount);
@@ -1075,8 +1035,6 @@ int psnake_movement_direction(int direction, int size, int sleng_steps[S],
     if(direction==up){
         endgame= move_up_p(size, sleng_steps, board, shead_p, turncount);
     }
-    
-    
     
     return endgame;
 }
@@ -1168,13 +1126,8 @@ void snake_move_loop(int size, int direction,int sleng_steps[S],
             endgame= move_snake_s(size, direction,sleng_steps, board, shead_s,
                                   turncount, max_steps);
         }
-        
         turncount++;
-        
     }
-    
-    
-    
 }
 
 
